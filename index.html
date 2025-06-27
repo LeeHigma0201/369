@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IBEW Local 369 - Union vs Non-Union Pay Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #B91C1C, #7F1D1D);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: #7F1D1D;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 3px solid #FCD34D;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            color: #FCD34D;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .calculator-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .input-card, .results-card {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .input-card h2 {
+            color: #1E40AF;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .results-card h2 {
+            color: #059669;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #374151;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #D1D5DB;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3B82F6;
+        }
+        
+        .calculate-btn {
+            width: 100%;
+            background: #1E40AF;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .calculate-btn:hover {
+            background: #1E3A8A;
+        }
+        
+        .electrical-saying {
+            background: #FCD34D;
+            color: #92400E;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+            font-style: italic;
+            font-weight: bold;
+        }
+        
+        .results {
+            display: none;
+        }
+        
+        .wage-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .wage-box {
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .union-wage {
+            background: #D1FAE5;
+            color: #065F46;
+            border: 2px solid #10B981;
+        }
+        
+        .current-wage {
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 2px solid #EF4444;
+        }
+        
+        .wage-amount {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .benefit-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #E5E7EB;
+        }
+        
+        .benefit-amount {
+            font-weight: bold;
+            color: #059669;
+        }
+        
+        .money-left {
+            background: #FEF3C7;
+            color: #92400E;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: center;
+            border: 2px solid #F59E0B;
+        }
+        
+        .misconceptions {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 40px 0;
+        }
+        
+        .misconceptions h2 {
+            color: #DC2626;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .myth-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .myth-item {
+            padding: 15px;
+            border-left: 4px solid #3B82F6;
+            background: #F8FAFC;
+        }
+        
+        .myth-title {
+            font-weight: bold;
+            color: #1E40AF;
+            margin-bottom: 10px;
+        }
+        
+        .myth-facts {
+            list-style: none;
+        }
+        
+        .myth-facts li {
+            margin: 5px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+        
+        .myth-facts li:before {
+            content: "✓";
+            color: #059669;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        
+        .footer {
+            background: #7F1D1D;
+            padding: 30px;
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .footer p {
+            margin: 10px 0;
+            color: #FCD34D;
+        }
+        
+        @media (max-width: 768px) {
+            .calculator-section, .myth-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .wage-comparison {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>IBEW Local 369</h1>
+        <p>Louisville, KY - Union vs Non-Union Pay Calculator</p>
+        <p>See how much more you could earn as a union electrician!</p>
+    </div>
+    
+    <div class="container">
+        <div class="calculator-section">
+            <div class="input-card">
+                <h2>💰 Enter Your Current Information</h2>
+                <p>Fill out your details to see your union benefits</p>
+                
+                <div class="form-group">
+                    <label for="currentWage">Current Hourly Wage</label>
+                    <input type="number" id="currentWage" placeholder="Enter your hourly rate" step="0.01">
+                </div>
+                
+                <div class="form-group">
+                    <label for="insuranceCost">Weekly Insurance Cost (Optional)</label>
+                    <input type="number" id="insuranceCost" placeholder="What you pay per week for insurance" step="0.01">
+                    <small>Leave blank if you don't have insurance</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="classification">Job Classification</label>
+                    <select id="classification">
+                        <option value="">Select your classification</option>
+                        <option value="journeyman">Journeyman</option>
+                        <option value="foreman">Foreman</option>
+                        <option value="general_foreman">General Foreman</option>
+                        <option value="area_general_foreman">Area General Foreman</option>
+                        <option value="apprentice1">Apprentice 1 (50%)</option>
+                        <option value="apprentice2">Apprentice 2 (52.5%)</option>
+                        <option value="apprentice3">Apprentice 3 (55%)</option>
+                        <option value="apprentice4">Apprentice 4 (60%)</option>
+                        <option value="apprentice5">Apprentice 5 (65%)</option>
+                        <option value="apprentice6">Apprentice 6 (70%)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="retirement">Retirement Contribution Preference</label>
+                    <select id="retirement">
+                        <option value="25">25% - Maximum Retirement (Recommended)</option>
+                        <option value="20">20% - Higher Take-Home Pay</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="yearsToRetirement">Years Until Retirement (Optional)</label>
+                    <input type="number" id="yearsToRetirement" placeholder="How many years until you retire?" min="1" max="50">
+                    <small>For retirement projection calculation</small>
+                </div>
+                
+                <div class="electrical-saying">
+                    "You are number 6 wire and your wages are landed on a 15amp breaker"<br>
+                    - Time to upgrade to union power! ⚡
+                </div>
+                
+                <button class="calculate-btn" onclick="calculateBenefits()">💰 Calculate Union Benefits</button>
+            </div>
+            
+            <div class="results-card">
+                <h2>✅ Your Union Benefits</h2>
+                <div id="placeholder" style="text-align: center; padding: 50px; color: #6B7280;">
+                    <p>📊</p>
+                    <p>Enter your information to see your union benefits</p>
+                </div>
+                
+                <div id="results" class="results">
+                    <div class="wage-comparison">
+                        <div class="wage-box union-wage">
+                            <div>Union Wage</div>
+                            <div class="wage-amount" id="unionWage">$0/hr</div>
+                        </div>
+                        <div class="wage-box current-wage">
+                            <div>Current Wage</div>
+                            <div class="wage-amount" id="currentWageDisplay">$0/hr</div>
+                        </div>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <span>Weekly Wage Increase:</span>
+                        <span class="benefit-amount" id="weeklyIncrease">+$0</span>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <span>Weekly Insurance Savings:</span>
+                        <span class="benefit-amount" id="insuranceSavings">+$0</span>
+                    </div>
+                    
+                    <div class="benefit-item" style="border-bottom: 2px solid #059669; font-weight: bold; font-size: 1.1rem;">
+                        <span>Total Weekly Benefit:</span>
+                        <span class="benefit-amount" id="totalWeekly">+$0</span>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <span>Monthly Benefit:</span>
+                        <span class="benefit-amount" id="monthlyBenefit">+$0</span>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <span>Yearly Benefit:</span>
+                        <span class="benefit-amount" id="yearlyBenefit">+$0</span>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <span>Monthly Retirement:</span>
+                        <span style="color: #3B82F6; font-weight: bold;" id="monthlyRetirement">$0</span>
+                    </div>
+                    
+                    <div id="retirementProjection" style="display: none;">
+                        <div style="background: #EBF8FF; padding: 15px; border-radius: 8px; margin: 15px 0; border: 1px solid #3B82F6;">
+                            <h4 style="color: #1E40AF; margin-bottom: 10px;">🎯 Retirement Projection</h4>
+                            <div class="benefit-item" style="border: none;">
+                                <span>Annual Contribution:</span>
+                                <span id="annualContribution">$0</span>
+                            </div>
+                            <div class="benefit-item" style="border: none;">
+                                <span>Total Contributions:</span>
+                                <span id="totalContributions">$0</span>
+                            </div>
+                            <div class="benefit-item" style="border: none;">
+                                <span>Growth Earnings (7% avg):</span>
+                                <span style="color: #059669;" id="growthEarnings">+$0</span>
+                            </div>
+                            <div class="benefit-item" style="border-top: 2px solid #3B82F6; font-weight: bold;">
+                                <span>Projected Total Value:</span>
+                                <span style="color: #1E40AF; font-size: 1.2rem;" id="projectedTotal">$0</span>
+                            </div>
+                            <small style="color: #6B7280;">*This is an estimate based on 7% average annual return and does not guarantee future performance.</small>
+                        </div>
+                    </div>
+                    
+                    <div class="money-left">
+                        <h4>💸 Money Left on the Table</h4>
+                        <p>By staying non-union, you're potentially missing out on <strong id="moneyLeftAmount">$0</strong> per year in additional earnings and benefits!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="misconceptions">
+            <h2>⚠️ Common Misconceptions—Real Local 369 Data</h2>
+            <p style="text-align: center; margin-bottom: 30px;">Thinking about joining a union but worried? Here's what you really need to know:</p>
+            
+            <div class="myth-grid">
+                <div class="myth-item">
+                    <div class="myth-title">💰 "Union dues just take my money"</div>
+                    <ul class="myth-facts">
+                        <li>Local 369 Dues: $42/month ($0.20/hour)</li>
+                        <li>Average gain: $7,488/year after dues</li>
+                        <li>Health & pension: ~$660/month value</li>
+                    </ul>
+                </div>
+                
+                <div class="myth-item">
+                    <div class="myth-title">💼 "I'll be stuck with limited jobs"</div>
+                    <ul class="myth-facts">
+                        <li>10,000+ job hours/month across 75 counties</li>
+                        <li>200+ signatory contractors</li>
+                        <li>Travel opportunities with per-diem</li>
+                    </ul>
+                </div>
+                
+                <div class="myth-item">
+                    <div class="myth-title">⚖️ "Unions are too political"</div>
+                    <ul class="myth-facts">
+                        <li>PAC contributions are 100% voluntary</li>
+                        <li>Quarterly reports published online</li>
+                        <li>Can opt out anytime without penalty</li>
+                    </ul>
+                </div>
+                
+                <div class="myth-item">
+                    <div class="myth-title">🛡️ "Unions won't protect me"</div>
+                    <ul class="myth-facts">
+                        <li>92% grievance win rate</li>
+                        <li>$420,000 recovered in back-pay</li>
+                        <li>4.5 vs 10.2 weeks unemployment average</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 30px; padding: 20px; background: #FEF3C7; border-radius: 10px;">
+                <strong>Don't leave money on the table - calculate your potential union benefits above!</strong>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p><strong>Stronger Together • Union Pride • Electrical Excellence</strong></p>
+        <p>This website is not officially designed by IBEW Local 369, but created by a proud Local 369 member.</p>
+        <p><strong>Created by Jason Walls</strong></p>
+    </div>
+    
+    <script>
+        const wageData = {
+            journeyman: { 25: 40.96, 20: 42.59 },
+            foreman: { 25: 45.47, 20: 47.26 },
+            general_foreman: { 25: 47.11, 20: 49.00 },
+            area_general_foreman: { 25: 49.11, 20: 51.08 },
+            apprentice1: { 25: 20.48, 20: 20.48 },
+            apprentice2: { 25: 21.51, 20: 21.51 },
+            apprentice3: { 25: 22.53, 20: 23.43 },
+            apprentice4: { 25: 24.58, 20: 25.56 },
+            apprentice5: { 25: 26.63, 20: 27.69 },
+            apprentice6: { 25: 28.67, 20: 29.82 }
+        };
+        
+        const retirementData = {
+            journeyman: { 25: 44.34, 20: 36.89 },
+            foreman: { 25: 49.24, 20: 40.96 },
+            general_foreman: { 25: 51.00, 20: 42.44 },
+            area_general_foreman: { 25: 53.16, 20: 44.24 },
+            apprentice1: { 25: 0, 20: 0 },
+            apprentice2: { 25: 0, 20: 0 },
+            apprentice3: { 25: 24.42, 20: 20.31 },
+            apprentice4: { 25: 26.64, 20: 22.16 },
+            apprentice5: { 25: 28.86, 20: 24.01 },
+            apprentice6: { 25: 31.08, 20: 25.86 }
+        };
+        
+        function calculateBenefits() {
+            const currentWage = parseFloat(document.getElementById('currentWage').value) || 0;
+            const insuranceCost = parseFloat(document.getElementById('insuranceCost').value) || 0;
+            const classification = document.getElementById('classification').value;
+            const retirement = parseInt(document.getElementById('retirement').value);
+            const yearsToRetirement = parseInt(document.getElementById('yearsToRetirement').value) || 0;
+            
+            if (!currentWage || !classification) {
+                alert('Please enter your current wage and select a classification.');
+                return;
+            }
+            
+            const unionWage = wageData[classification][retirement];
+            const monthlyRetirement = retirementData[classification][retirement];
+            
+            const weeklyWageIncrease = (unionWage - currentWage) * 40;
+            const weeklyInsuranceSavings = insuranceCost;
+            const totalWeeklyBenefit = weeklyWageIncrease + weeklyInsuranceSavings;
+            const monthlyBenefit = totalWeeklyBenefit * 4.33;
+            const yearlyBenefit = totalWeeklyBenefit * 52;
+            
+            // Update display
+            document.getElementById('unionWage').textContent = `$${unionWage.toFixed(2)}/hr`;
+            document.getElementById('currentWageDisplay').textContent = `$${currentWage.toFixed(2)}/hr`;
+            document.getElementById('weeklyIncrease').textContent = `+$${weeklyWageIncrease.toFixed(2)}`;
+            document.getElementById('insuranceSavings').textContent = `+$${weeklyInsuranceSavings.toFixed(2)}`;
+            document.getElementById('totalWeekly').textContent = `+$${totalWeeklyBenefit.toFixed(2)}`;
+            document.getElementById('monthlyBenefit').textContent = `+$${monthlyBenefit.toFixed(2)}`;
+            document.getElementById('yearlyBenefit').textContent = `+$${yearlyBenefit.toFixed(2)}`;
+            document.getElementById('monthlyRetirement').textContent = `$${monthlyRetirement.toFixed(2)}`;
+            document.getElementById('moneyLeftAmount').textContent = `$${yearlyBenefit.toFixed(0)}`;
+            
+            // Retirement projection
+            if (yearsToRetirement > 0 && monthlyRetirement > 0) {
+                const annualContribution = monthlyRetirement * 12;
+                const totalContributions = annualContribution * yearsToRetirement;
+                
+                // Compound interest calculation (7% annual return)
+                let futureValue = 0;
+                for (let year = 1; year <= yearsToRetirement; year++) {
+                    futureValue = (futureValue + annualContribution) * 1.07;
+                }
+                
+                const growthEarnings = futureValue - totalContributions;
+                
+                document.getElementById('annualContribution').textContent = `$${annualContribution.toFixed(2)}`;
+                document.getElementById('totalContributions').textContent = `$${totalContributions.toFixed(0)}`;
+                document.getElementById('growthEarnings').textContent = `+$${growthEarnings.toFixed(0)}`;
+                document.getElementById('projectedTotal').textContent = `$${futureValue.toFixed(0)}`;
+                document.getElementById('retirementProjection').style.display = 'block';
+            } else {
+                document.getElementById('retirementProjection').style.display = 'none';
+            }
+            
+            // Show results
+            document.getElementById('placeholder').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
+
